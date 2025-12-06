@@ -1,0 +1,62 @@
+# Netlify Configuration for Audityzer Landing Site
+# Безплатний хостинг з автоматичним розгортанням
+
+[build]
+  command = "npm run build"
+  functions = "functions"
+  publish = "public"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NPM_VERSION = "9"
+  NODE_ENV = "production"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api:splat"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "no-referrer-when-downgrade"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Content-Type = "application/json"
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# Автоматичне розгортання при push на main
+[context.production]
+  command = "npm run build"
+  environment = { NODE_ENV = "production" }
+
+# Deployment preview при PR
+[context.deploy-preview]
+  command = "npm run build"
+  environment = { NODE_ENV = "staging" }
+
+# Branch deploy для development
+[context.branch-deploy]
+  command = "npm run build"
+  environment = { NODE_ENV = "development" }
+
+# Поточна конфігурація сайту
+[site]
+  name = "audityzer-landing"
+  id = "audityzer-landing"
+
+# DNS конфігурація для альтернативних доменів
+# audityzer.com -> audityzer-landing.netlify.app
+# auditorsec.com -> audityzer-landing.netlify.app
+# audityzer.web3 -> audityzer-landing.netlify.app
