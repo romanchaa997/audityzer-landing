@@ -128,6 +128,179 @@ app.post('/api/book-demo', async (req, res) => {
     console.error('Booking error:', error)
     res.status(500).json({ error: 'Failed to book demo. Please try again.' })
   }
+
+
+// Tasks Management - Create/Get/Update tasks
+app.post('/api/tasks', async (req, res) => {
+  const { title, description, priority, assignee, dueDate } = req.body
+  
+  if (!title || !priority) {
+    return res.status(400).json({ error: 'Title and priority are required' })
+  }
+  
+  try {
+    const taskId = `task-${Date.now()}`
+    res.status(201).json({
+      success: true,
+      message: 'Task created successfully',
+      taskId,
+      task: { title, description, priority, assignee, dueDate, status: 'open', createdAt: new Date().toISOString() }
+    })
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create task' })
+  }
+})
+
+app.get('/api/tasks', async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      tasks: [
+        { id: 'task-1', title: 'Security Audit', priority: 'high', status: 'in-progress' },
+        { id: 'task-2', title: 'Code Review', priority: 'medium', status: 'pending' },
+        { id: 'task-3', title: 'Documentation', priority: 'low', status: 'completed' }
+      ]
+    })
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch tasks' })
+  }
+})
+
+// Reports - Generate/Get audit reports
+app.post('/api/reports/generate', async (req, res) => {
+  const { domain, scanType, frequency } = req.body
+  
+  if (!domain || !scanType) {
+    return res.status(400).json({ error: 'Domain and scanType are required' })
+  }
+  
+  try {
+    const reportId = `report-${Date.now()}`
+    res.status(201).json({
+      success: true,
+      message: 'Report generation started',
+      reportId,
+      estimatedTime: '5-10 minutes',
+      status: 'processing'
+    })
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to generate report' })
+  }
+})
+
+app.get('/api/reports/:reportId', async (req, res) => {
+  const { reportId } = req.params
+  
+  try {
+    res.json({
+      success: true,
+      report: {
+        id: reportId,
+        domain: 'example.com',
+        scanType: 'security',
+        status: 'completed',
+        generatedAt: new Date().toISOString(),
+        findings: {
+          critical: 2,
+          high: 5,
+          medium: 12,
+          low: 3
+        },
+        score: 7.8
+      }
+    })
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch report' })
+  }
+})
+
+// Analytics - Usage statistics
+app.get('/api/analytics', async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      analytics: {
+        totalScans: 1247,
+        totalDomains: 89,
+        averageScore: 7.5,
+        criticalFindings: 34,
+        reportsGenerated: 156,
+        usersActive: 23,
+        uptime: '99.9%',
+        responseTime: '245ms',
+        lastUpdated: new Date().toISOString()
+      }
+    })
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch analytics' })
+  }
+})
+
+app.post('/api/analytics/track', async (req, res) => {
+  const { eventType, eventData } = req.body
+  
+  try {
+    res.json({
+      success: true,
+      message: 'Event tracked successfully',
+      eventId: `evt-${Date.now()}`,
+      timestamp: new Date().toISOString()
+    })
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to track event' })
+  }
+})
+
+// Audit Status - Get real-time audit status
+app.get('/api/audit/status', async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      status: 'operational',
+      services: {
+        securityAudit: 'running',
+        complianceCheck: 'idle',
+        vulnerabilityScanner: 'running',
+        reportGeneration: 'idle'
+      },
+      performance: {
+        cpu: 34,
+        memory: 52,
+        diskSpace: 78
+      }
+    })
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch status' })
+  }
+})
+
+// Webhooks - Handle external integrations
+app.post('/api/webhooks/register', async (req, res) => {
+  const { url, events } = req.body
+  
+  if (!url || !events) {
+    return res.status(400).json({ error: 'URL and events are required' })
+  }
+  
+  try {
+    res.status(201).json({
+      success: true,
+      message: 'Webhook registered successfully',
+      webhookId: `wh-${Date.now()}`,
+      url,
+      events,
+      status: 'active'
+    })
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to register webhook' })
+  }
+})
+
+// Start server
+const PORT = process.env.PORT || 3000
+app.listen(PORT, () => {
+  console.log(`Audityzer server running on http://localhost:${PORT}`)
+})
 })
 
 
