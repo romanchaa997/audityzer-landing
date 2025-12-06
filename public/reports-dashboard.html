@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports - Audityzer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header { background: #28a745; color: white; padding: 30px 20px; border-radius: 8px; margin-bottom: 30px; }
+    h1 { font-size: 32px; margin-bottom: 10px; }
+    .reports { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+    .report-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .report-title { font-weight: bold; margin-bottom: 10px; font-size: 18px; }
+    .report-date { color: #666; font-size: 14px; margin-bottom: 15px; }
+    .report-score { font-size: 32px; font-weight: bold; color: #28a745; margin-bottom: 10px; }
+    .report-findings { padding: 10px; background: #f9f9f9; border-radius: 4px; margin-bottom: 10px; }
+    .finding-item { padding: 5px 0; font-size: 14px; }
+    .finding-critical { color: #dc3545; font-weight: bold; }
+    .finding-high { color: #ff6b6b; }
+    .finding-medium { color: #ffd93d; }
+    .btn { padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+    .btn:hover { background: #218838; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📊 Security Reports</h1>
+      <p>View and download security audit reports</p>
+    </header>
+
+    <div class="reports" id="reportsList">
+      <div class="report-card">
+        <div class="report-title">example.com - Full Audit</div>
+        <div class="report-date">Generated: 2025-12-05</div>
+        <div class="report-score">8.2</div>
+        <div class="report-findings">
+          <div class="finding-item"><span class="finding-critical">Critical: 1</span></div>
+          <div class="finding-item"><span class="finding-high">High: 4</span></div>
+          <div class="finding-item"><span class="finding-medium">Medium: 8</span></div>
+        </div>
+        <button class="btn" onclick="downloadReport('example.com')">Download Report</button>
+      </div>
+      <div class="report-card">
+        <div class="report-title">api.example.com - API Security</div>
+        <div class="report-date">Generated: 2025-12-04</div>
+        <div class="report-score">7.5</div>
+        <div class="report-findings">
+          <div class="finding-item"><span class="finding-high">High: 3</span></div>
+          <div class="finding-item"><span class="finding-medium">Medium: 6</span></div>
+        </div>
+        <button class="btn" onclick="downloadReport('api.example.com')">Download Report</button>
+      </div>
+      <div class="report-card">
+        <div class="report-title">backend.example.com - Infrastructure</div>
+        <div class="report-date">Generated: 2025-12-03</div>
+        <div class="report-score">9.1</div>
+        <div class="report-findings">
+          <div class="finding-item"><span class="finding-medium">Medium: 2</span></div>
+        </div>
+        <button class="btn" onclick="downloadReport('backend.example.com')">Download Report</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function downloadReport(domain) {
+      alert(`Downloading report for ${domain}...`)
+    }
+
+    async function loadReports() {
+      try {
+        const response = await fetch('/api/analytics')
+        const data = await response.json()
+        if (data.success) {
+          console.log('Reports loaded:', data.analytics)
+        }
+      } catch (error) {
+        console.error('Error loading reports:', error)
+      }
+    }
+    loadReports()
+  </script>
+</body>
+</html>
