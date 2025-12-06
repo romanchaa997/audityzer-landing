@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Form - Audityzer</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+    form { border: 1px solid #ddd; padding: 20px; border-radius: 8px; }
+    input, textarea { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    button { background: #007bff; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; width: 100%; }
+    button:hover { background: #0056b3; }
+    .success { color: green; margin-top: 10px; display: none; }
+    .error { color: red; margin-top: 10px; display: none; }
+  </style>
+</head>
+<body>
+  <h1>Зв'язатися з нами</h1>
+  <form id="contactForm">
+    <input type="text" name="name" placeholder="Ваше ім'я" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="text" name="company" placeholder="Компанія (опціонально)">
+    <textarea name="message" placeholder="Ваше повідомлення" rows="5" required></textarea>
+    <button type="submit">Відправити</button>
+    <div class="success" id="successMsg">Спасибі! Ваше повідомлення отримано.</div>
+    <div class="error" id="errorMsg">Помилка при відправці. Спробуйте ще раз.</div>
+  </form>
+
+  <script>
+    document.getElementById('contactForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = {
+        name: document.querySelector('input[name="name"]').value,
+        email: document.querySelector('input[name="email"]').value,
+        company: document.querySelector('input[name="company"]').value,
+        message: document.querySelector('textarea[name="message"]').value
+      };
+      
+      try {
+        const response = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+        
+        if (response.ok) {
+          document.getElementById('successMsg').style.display = 'block';
+          document.getElementById('contactForm').reset();
+        } else {
+          document.getElementById('errorMsg').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('errorMsg').style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>
