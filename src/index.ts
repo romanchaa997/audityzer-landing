@@ -49,4 +49,86 @@ app.get('/healthz', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() })
 })
 
+// Middleware for parsing JSON
+app.use(express.json())
+
+// Contact Form - Send data to Zapier webhook
+app.post('/api/contact', async (req, res) => {
+  const { name, email, message, company } = req.body
+  
+  // Basic validation
+  if (!name || !email || !message) {
+    return res.status(400).json({ error: 'Name, email, and message are required' })
+  }
+  
+  try {
+    // Send to Zapier webhook
+    const zapierWebhookUrl = process.env.ZAPIER_CONTACT_WEBHOOK || 'https://hooks.zapier.com/hooks/catch/YOUR_ZAPIER_WEBHOOK_ID/'
+    
+    const response = await fetch(zapierWebhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name,
+        email,
+        message,
+        company,
+        submittedAt: new Date().toISOString(),
+        source: 'contact-form',
+      }),
+    })
+    
+    if (!response.ok) throw new Error('Zapier webhook failed')
+    
+    res.status(200).json({ 
+      success: true, 
+      message: 'Thank you! We\'ll be in touch soon.',
+      id: `contact-${Date.now()}` 
+    })
+  } catch (error) {
+    console.error('Contact form error:', error)
+    res.status(500).json({ error: 'Failed to submit form. Please try again.' })
+  }
+})
+
+// Booking/Demo Request - Calendar integration
+app.post('/api/book-demo', async (req, res) => {
+  const { name, email, company, preferredDate, notes } = req.body
+  
+  if (!name || !email || !preferredDate) {
+    return res.status(400).json({ error: 'Name, email, and preferred date are required' })
+  }
+  
+  try {
+    // Send to Zapier for calendar booking
+    const zapierWebhookUrl = process.env.ZAPIER_BOOKING_WEBHOOK || 'https://hooks.zapier.com/hooks/catch/YOUR_BOOKING_WEBHOOK_ID/'
+    
+    const response = await fetch(zapierWebhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name,
+        email,
+        company,
+        preferredDate,
+        notes,
+        bookingType: 'demo',
+        submittedAt: new Date().toISOString(),
+      }),
+    })
+    
+    if (!response.ok) throw new Error('Zapier booking webhook failed')
+    
+    res.status(200).json({ 
+      success: true, 
+      message: 'Thank you! We\'ll send you a calendar invite shortly.',
+      bookingId: `booking-${Date.now()}` 
+    })
+  } catch (error) {
+    console.error('Booking error:', error)
+    res.status(500).json({ error: 'Failed to book demo. Please try again.' })
+  }
+})
+
+
 export default app
